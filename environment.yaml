@@ -1,0 +1,9 @@
+name: cv_class
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12.13
+  - pip=26.1.2
+  - pip:
+      - uv==0.11.23
