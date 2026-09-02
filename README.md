@@ -35,6 +35,10 @@ tutorials/    # Tutorial notebooks/scripts
 slides/       # Course slide decks (.tex) and reference book
 ```
 
+## Slides
+
+https://drive.google.com/drive/folders/16FizqbGR7YJyOUBjx0GAiNnH3DyneTER?usp=drive_link
+
 ## Requirements
 
 - [Conda](https://docs.conda.io/en/latest/miniconda.html) (Miniconda or Anaconda)
