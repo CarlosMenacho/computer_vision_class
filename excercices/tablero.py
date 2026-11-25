@@ -5,32 +5,28 @@ from utils import cvlog
 
 cvlog.start("tablero")
 
+columnas = 8   # esquinas interiores
+filas = 5      # esquinas interiores
+
+flag = cv2.CALIB_CB_ADAPTIVE_THRESH | cv2.CALIB_CB_NORMALIZE_IMAGE
+criterio = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
 for frame in cvlog.frames(0):
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    flag = cv2.CALIB_CB_NORMALIZE_IMAGE
+    encontrado, esquinas = cv2.findChessboardCorners(gray, (columnas, filas), flags=flag)
 
-    columnas = 9
-    filas = 6
+    cvlog.image("camara", frame)
+    cvlog.scalar("detectado", int(encontrado))
 
-    encontrado, esquinas = cv2.findChessboardCorners(
-        gray,
-        (filas, columnas), 
-        flags=flag)
+    if not encontrado:
+        cvlog.points2d("camara/esquinas", np.zeros((0, 2)))  # borra los puntos viejos
+        cvlog.lines2d("camara/orden", [])
+        continue
 
-    # cvlog.scalar("detectado", [])
-    # cvlog.points2d("camara/esquinas", [])
+    esquinas = cv2.cornerSubPix(gray, esquinas, (11, 11), (-1, -1), criteria=criterio)
+    esquinas = esquinas.reshape(-1, 2)
 
-    if encontrado:
-        print(f"Se encuentra chessboards")
-        criterio = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-        esquinas = cv2.cornerSubPix(gray, esquinas, (11,11), (-1,-1), criteria=criterio)
-        esquinas = esquinas.reshape(-1, 2)
-
-        cvlog.scalar("detectado", esquinas is not None)
-        cvlog.points2d("camara/esquinas", esquinas, colors=(0,255,0), radius=4)
-
-        cvlog.lines2d("camara/orden", esquinas, colors=(255,255,0))  
-
-    cvlog.image("image/frame",frame)
+    cvlog.points2d("camara/esquinas", esquinas, colors=(0, 255, 0), radius=4)
+    cvlog.lines2d("camara/orden", [esquinas], colors=(255, 255, 0))
